@@ -1,55 +1,45 @@
-// Check timestamp in storage
-// if current time is beyond this time, clear storage
-// else, disable the page
-
 (function () {
   chrome.storage.local.get(["noNetUntil"], function (result) {
-    chrome.storage.local.clear('noNetUntil', ()=>{});
     if (
       !result ||
-      (typeof result === "object" && Object.keys(result).length === 0)
+      (typeof result === "object" && Object.keys(result).length === 0) ||
+      !result.noNetUntil
     ) {
       return;
     }
-    console.log(result);
-    const noNetUntil = new Date(result).getTime();
+    const noNetUntil = new Date(result.noNetUntil).getTime();
     const now = new Date().getTime();
-    console.log({ now, noNetUntil });
-    if (noNetUntil >= now) {
-      chrome.storage.local.clear("noNetUntil", () => {});
+    if (noNetUntil < now) {
+      chrome.storage.local.clear();
     } else {
       document.querySelector("body").remove();
-      const readableTime = noNetUntil;
+      const readableTime = new Intl.DateTimeFormat([], {
+        dateStyle: "full",
+        timeStyle: "long",
+      }).format(new Date(result.noNetUntil));
       document.querySelector("html").insertAdjacentHTML(
         "beforeend",
         `<body>
                 <p>No web until ${readableTime}</p>
-                <span class="skull">&#128369;</span>
-                <span class="skull">&#x1f480;</span>
-
               <style>
                 html {
-                    font-family: 'Courier New', monospace;
-                    font-size: 60px;
-                    color: white;
-                    background-color: black;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    height: 100vh;
+                    font-family: 'Courier New', monospace !important;
+                    font-size: 60px !important;
+                    color: white !important;
+                    background-color: black !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    height: 100vh !important;
+                }
+                p {
+                    max-width: 70vw !important;
                 }
 
-                .skull {
-                    font-size: 300px;
-                    font-family: monospace !important;
-                }
-              </style>
-              
+              </style>             
               </body>`
       );
     }
-
-    console.log("Value currently is " + result.key);
   });
 })();

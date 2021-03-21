@@ -4,9 +4,12 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <label for="time">Block all web pages until:</label>
-    <input type="datetime-local" id="time" name="time" />
-    <button id="submit">Save</button>
+    <div id="picker">
+      <label for="time">Block all web pages until:</label>
+      <input disabled type="datetime-local" id="time" name="time" />
+      <button disabled id="submit">Save</button>
+    </div>
+    <p hidden>No web for you until: <div data-time-display></div></p>
     <script src="popup.js"></script>
   </body>
 </html>
